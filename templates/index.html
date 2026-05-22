@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mosaic Studio Pro</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <div class="eyebrow">✨ Immersive Mosaic Experience</div>
+      <h1>Mosaic Studio Pro</h1>
+      <p>Transform personal photos into a premium mosaic artwork with elegant quote footer branding and Render-friendly processing.</p>
+      <div class="hero-pills">
+        <span>🖼️ High-quality output</span>
+        <span>🎨 Quote footer</span>
+        <span>⚡ Render Free optimized</span>
+        <span>⬇️ Download-ready artwork</span>
+      </div>
+    </section>
+
+    <form id="mosaicForm" class="studio-grid">
+      <aside class="settings-card">
+        <h2>🎛️ Artwork Controls</h2>
+        <p>Tune detail level, blending, sharpening, and export format.</p>
+
+        <label>Tile Resolution</label>
+        <select name="tile_res">
+          <option value="16">16 px</option>
+          <option value="32" selected>32 px</option>
+          <option value="64">64 px</option>
+          <option value="128">128 px</option>
+        </select>
+
+        <label>Grid Density Across</label>
+        <input name="density" type="range" min="40" max="160" value="100" oninput="densityValue.textContent=this.value" />
+        <div class="range-value"><span id="densityValue">100</span> tiles across</div>
+
+        <label>Pre-Sharpen Main Photo</label>
+        <input name="target_sharpness" type="range" min="0" max="300" value="150" oninput="sharpValue.textContent=this.value" />
+        <div class="range-value"><span id="sharpValue">150</span>% sharpness</div>
+
+        <label>Texture Variety</label>
+        <input name="random_k" type="range" min="1" max="10" value="2" oninput="varietyValue.textContent=this.value" />
+        <div class="range-value"><span id="varietyValue">2</span> candidate variety</div>
+
+        <label>Blending Method</label>
+        <select name="blend_mode">
+          <option selected>Luminosity Multiply (Sharp)</option>
+          <option>Alpha Overlay</option>
+        </select>
+
+        <label>Overlay Strength</label>
+        <input name="alpha_mix" type="range" min="0" max="1" value="0.15" step="0.01" oninput="alphaValue.textContent=this.value" />
+        <div class="range-value"><span id="alphaValue">0.15</span></div>
+
+        <label>Export Format</label>
+        <select name="export_fmt">
+          <option selected>JPEG</option>
+          <option>PNG</option>
+        </select>
+
+        <label class="check-row"><input type="checkbox" name="add_footer" checked /> Add quote footer with Team Aviv</label>
+      </aside>
+
+      <section class="main-card">
+        <div class="step-card">
+          <div class="badge">1</div>
+          <div>
+            <h2>Upload your memory tiles</h2>
+            <p>Upload the photos that will become the tiny building blocks of your mosaic. For best results, use 20–80 clear images. Version 1 supports up to 120 images for stable free hosting.</p>
+            <label class="file-drop" for="tilesInput">
+              <span class="file-icon">📁</span>
+              <span>
+                <strong>Select tile photos</strong>
+                <small id="tilesFileName">No files selected</small>
+              </span>
+            </label>
+            <input id="tilesInput" class="real-file-input" type="file" name="tiles" accept="image/*" multiple required />
+            <div id="photoScanBox" class="photo-scan hidden">
+              <div class="progress-head">
+                <b id="scanTitle">Checking photos</b>
+                <span id="scanCount">0 / 0</span>
+              </div>
+              <div class="progress-track"><div id="scanFill" class="progress-fill"></div></div>
+              <small id="scanText">Finding the best portrait options from your uploaded photos.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="badge">2</div>
+          <div>
+            <h2>Choose your main photo</h2>
+            <p>Optional. If you skip this, the backend will automatically select the sharpest tile photo as the main portrait.</p>
+            <div class="portrait-suggestions">
+              <div class="section-title-row">
+                <h3>Best portrait suggestions</h3>
+                <span>For clean mosaic output</span>
+              </div>
+              <div id="dynamicSuggestionGrid" class="suggestion-grid dynamic-suggestions hidden"></div>
+              <div id="staticSuggestionGrid" class="suggestion-grid">
+                <article class="suggestion-card">
+                  <img src="/static/suggestions/front_portrait.svg" alt="Front facing portrait example">
+                  <b>Front-facing face</b>
+                  <small>Best for clear identity</small>
+                </article>
+                <article class="suggestion-card">
+                  <img src="/static/suggestions/bright_face.svg" alt="Bright portrait example">
+                  <b>Good lighting</b>
+                  <small>Avoid dark shadows</small>
+                </article>
+                <article class="suggestion-card">
+                  <img src="/static/suggestions/simple_background.svg" alt="Simple background portrait example">
+                  <b>Simple background</b>
+                  <small>Face should stand out</small>
+                </article>
+                <article class="suggestion-card avoid">
+                  <img src="/static/suggestions/avoid_group.svg" alt="Group photo warning example">
+                  <b>Avoid group photos</b>
+                  <small>Single subject works better</small>
+                </article>
+              </div>
+              <p id="suggestionHint" class="suggestion-hint hidden">Select one of these 3 suggested portraits, or upload your own main portrait below.</p>
+            </div>
+
+            <label class="file-drop target-drop" for="targetInput">
+              <span class="file-icon">🖼️</span>
+              <span>
+                <strong>Select main portrait</strong>
+                <small id="targetFileName">Optional — auto-pick if empty</small>
+              </span>
+            </label>
+            <input id="targetInput" class="real-file-input" type="file" name="target" accept="image/*" />
+          </div>
+        </div>
+
+        <button class="primary-btn" type="submit">✨ Create My Mosaic Artwork</button>
+
+        <div id="status" class="status hidden"></div>
+        <div id="generateProgressBox" class="generate-progress hidden">
+          <div class="progress-head">
+            <b id="generateTitle">Preparing</b>
+            <span id="generatePercent">0%</span>
+          </div>
+          <div class="progress-track"><div id="generateFill" class="progress-fill"></div></div>
+          <small id="generateText">Uploading photos...</small>
+        </div>
+
+        <section id="result" class="result hidden">
+          <div class="metric-row">
+            <div><b id="tileCount">0</b><span>Tiles processed</span></div>
+            <div><b id="outputSize">0 × 0</b><span>Output size</span></div>
+            <div><b id="targetSource">Target</b><span>Main photo source</span></div>
+          </div>
+
+          <h2>Your mosaic is ready</h2>
+          <p>Preview the completed artwork and inspect the 1:1 detail crop before unlocking the high-resolution download.</p>
+
+          <img id="previewImg" class="preview-img" alt="Mosaic preview" />
+
+          <h3>🔍 1:1 Detail Preview</h3>
+          <img id="cropImg" class="crop-img" alt="Mosaic crop" />
+
+          <div class="download-panel">
+            <h2>Download your finished artwork</h2>
+            <p>Version 1 does not collect name, email, or phone details. Download directly after generation.</p>
+            <a id="downloadLink" class="download-link">⬇️ Download High-Quality File</a>
+          </div>
+        </section>
+      </section>
+    </form>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
