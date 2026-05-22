@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: mosaic-studio-pro-v1
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 2 --timeout 240 --max-requests 20 --max-requests-jitter 5
+    healthCheckPath: /healthz
+    envVars:
+      - key: MAX_IMAGES
+        value: 120
+      - key: MAX_CONTENT_LENGTH_MB
+        value: 150
+      - key: MAX_OUTPUT_PIXELS
+        value: 18000000
+      - key: JPEG_QUALITY
+        value: 92
+      - key: CLEANUP_MINUTES
+        value: 120
